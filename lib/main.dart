@@ -8,6 +8,9 @@ import 'package:tmdb/services/data.dart';
 import 'package:tmdb/ui/home/home.dart';
 import 'package:tmdb/widgets/theme.dart';
 
+import 'config/push_notification_config.dart';
+import 'firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

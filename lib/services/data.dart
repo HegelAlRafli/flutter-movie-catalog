@@ -11,41 +11,41 @@ class Data extends ChangeNotifier {
   MovieModel? _npModel;
   MovieModel? _tpModel;
   MovieModel? _popularModel;
-  bool isloaded = false;
+  bool isLoaded = false;
 
   List npResult = [];
   List tpResult = [];
   List popularResult = [];
 
-  Future fetchdata(context) async {
+  Future fetchApi(context) async {
     await getPopular();
     await getNowPlaying();
     await getTopRated();
-    isloaded = true;
+    isLoaded = true;
     notifyListeners();
   }
 
   Future getPopular() async {
     _popularModel = await ApiService().getPopular(1);
     popularResult = _popularModel!.results!;
-    await cacheDb(popularResult, MovieFields.popular);
+    await _cacheDb(popularResult, MovieFields.popular);
   }
 
   Future getNowPlaying() async {
-    _npModel = await ApiService().getPopular(1);
+    _npModel = await ApiService().getNowPlaying(1);
     npResult = _npModel!.results!;
-    await cacheDb(npResult, MovieFields.nowPlaying);
+    await _cacheDb(npResult, MovieFields.nowPlaying);
   }
 
   Future getTopRated() async {
-    _tpModel = await ApiService().getPopular(1);
+    _tpModel = await ApiService().getTopRated(1);
     tpResult = _tpModel!.results!;
-    await cacheDb(tpResult, MovieFields.topRated);
+    await _cacheDb(tpResult, MovieFields.topRated);
   }
 
-  Future<void> cacheDb(List model, String movieFields) async {
+  Future<void> _cacheDb(List model, String table) async {
     DatabaseHelper _db = DatabaseHelper.instance;
-    await _db.deleteTable(MovieFields.popular);
+    await _db.deleteTable(table);
 
     for (int i = 0; i < model.length; i++) {
       final data = model[i];
@@ -56,7 +56,13 @@ class Data extends ChangeNotifier {
         title: data.title,
         voteAverage: data.voteAverage,
       );
-      await _db.create(movieFields, result);
+      await _db.create(table, result);
     }
+  }
+
+  Future<List<MovieDatabaseModel>> _readDb(String table) async {
+    DatabaseHelper _db = DatabaseHelper.instance;
+
+    return _db.read(table);
   }
 }
