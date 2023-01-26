@@ -3,10 +3,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tmdb/config/push_notification_config.dart';
-import 'package:tmdb/firebase_options.dart';
+import 'package:provider/provider.dart';
+import 'package:tmdb/services/data.dart';
 import 'package:tmdb/ui/home/home.dart';
 import 'package:tmdb/widgets/theme.dart';
+
+import 'config/push_notification_config.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,23 +70,22 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(backgroundColor: appBarColor),
-        scaffoldBackgroundColor: backgroundColor,
-        textTheme: GoogleFonts.openSansTextTheme(),
+    return ChangeNotifierProvider(
+      create: (context) => Data(),
+      child: MaterialApp(
+        theme: ThemeData(
+            appBarTheme: AppBarTheme(backgroundColor: appBarColor),
+            scaffoldBackgroundColor: backgroundColor,
+            textTheme: GoogleFonts.openSansTextTheme()),
+        builder: (context, child) {
+          return ScrollConfiguration(
+            behavior: MyBehavior(),
+            child: child!,
+          );
+        },
+        debugShowCheckedModeBanner: false,
+        home: Home(),
       ),
-      builder: (context, child) {
-        return ScrollConfiguration(
-          behavior: MyBehavior(),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Home(),
-      routes: {
-        'home': (_) => Home(),
-      },
     );
   }
 }
