@@ -11,6 +11,7 @@ import '../../../common/navigate.dart';
 import '../../../common/shared_code.dart';
 import '../../../widgets/loading/loading_animation.dart';
 import '../login/login.dart';
+import '../reset_password/reset_password.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -114,7 +115,9 @@ class _RegisterState extends State<Register> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigate.navigatorPush(context, ResetPassword());
+                          },
                           child: Text(
                             'Lupa password?',
                             style: TextStyle(color: Colors.white, fontSize: 12),
