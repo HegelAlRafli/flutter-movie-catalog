@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tmdb/common/color_value.dart';
 import 'package:tmdb/services/data.dart';
+import 'package:tmdb/services/providers/loading_provider.dart';
 import 'package:tmdb/ui/home/home.dart';
 import 'package:tmdb/ui/splash_screen/splash_screen.dart';
 import 'package:tmdb/widgets/theme.dart';
@@ -72,8 +73,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => Data(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => Data()),
+        ChangeNotifierProvider(create: (_) => LoadingProvider()),
+      ],
       child: MaterialApp(
         theme: ThemeData(
             appBarTheme: AppBarTheme(backgroundColor: appBarColor),

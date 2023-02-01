@@ -4,23 +4,22 @@ import 'package:provider/provider.dart';
 import 'package:tmdb/common/color_value.dart';
 import 'package:tmdb/services/firebase_service.dart';
 import 'package:tmdb/services/providers/loading_provider.dart';
+import 'package:tmdb/ui/auth/register/register.dart';
 import 'package:tmdb/ui/home/home.dart';
+import 'package:tmdb/widgets/loading/loading_animation.dart';
 import 'package:tmdb/widgets/text_form_field/custom_text_form_field.dart';
 
 import '../../../common/navigate.dart';
 import '../../../common/shared_code.dart';
-import '../../../widgets/loading/loading_animation.dart';
-import '../login/login.dart';
 
-class Register extends StatefulWidget {
-  const Register({Key? key}) : super(key: key);
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
-  State<Register> createState() => _RegisterState();
+  State<Login> createState() => _LoginState();
 }
 
-class _RegisterState extends State<Register> {
-  final _nameController = TextEditingController();
+class _LoginState extends State<Login> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -73,7 +72,7 @@ class _RegisterState extends State<Register> {
                         height: 4,
                       ),
                       Text(
-                        'Masukkan email dan password untuk mendaftar',
+                        'Masukkan email dan password untuk masuk',
                         style: TextStyle(
                           color: Color(0XFF9B9B9B),
                           fontSize: 12,
@@ -81,15 +80,6 @@ class _RegisterState extends State<Register> {
                       ),
                       SizedBox(
                         height: 24,
-                      ),
-                      CustomTextFormField(
-                        label: 'Masukkan nama',
-                        controller: _nameController,
-                        validator: (value) =>
-                            SharedCode().emptyValidator(value),
-                      ),
-                      SizedBox(
-                        height: 8,
                       ),
                       CustomTextFormField(
                         label: 'Masukkan email',
@@ -129,9 +119,8 @@ class _RegisterState extends State<Register> {
                           if (_formKey.currentState!.validate()) {
                             provider.setIsLoad();
                             await FirebaseService()
-                                .signUp(
+                                .signIn(
                                   context,
-                                  name: _nameController.text,
                                   email: _emailController.text,
                                   password: _passwordController.text,
                                 )
@@ -144,21 +133,21 @@ class _RegisterState extends State<Register> {
                             provider.setIsLoad();
                           }
                         },
-                        child: Text('Daftar'),
+                        child: Text('Masuk'),
                       ),
                       SizedBox(
                         height: 40,
                       ),
                       RichText(
                         text: TextSpan(
-                          text: 'Sudah punya akun? ',
+                          text: 'Belum punya akun? ',
                           style: TextStyle(
                             color: ColorValue.greyColor,
                             fontSize: 12,
                           ),
                           children: [
                             TextSpan(
-                              text: 'Masuk',
+                              text: 'Daftar',
                               style: TextStyle(
                                 color: ColorValue.secondaryColor,
                                 fontSize: 12,
@@ -166,7 +155,7 @@ class _RegisterState extends State<Register> {
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () => Navigate.navigatorPush(
                                       context,
-                                      const Login(),
+                                      const Register(),
                                     ),
                             ),
                           ],

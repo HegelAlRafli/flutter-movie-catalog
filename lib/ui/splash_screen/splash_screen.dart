@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tmdb/common/navigate.dart';
+import 'package:tmdb/ui/auth/login/login.dart';
 import 'package:tmdb/ui/auth/register/register.dart';
 import 'package:tmdb/ui/home/home.dart';
 
@@ -21,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
     Navigate.navigatorPushAndRemove(
       context,
-      FirebaseAuth.instance.currentUser != null ? Home() : Register(),
+      FirebaseAuth.instance.currentUser != null ? Home() : Login(),
     );
   }
 
