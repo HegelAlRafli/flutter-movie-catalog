@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:tmdb/common/navigate.dart';
 import 'package:tmdb/database/init/database.dart';
 import 'package:tmdb/database/model/database_model.dart';
 import 'package:tmdb/models/movie_model.dart';
@@ -19,6 +21,7 @@ import 'package:tmdb/widgets/item_movie.dart';
 import 'package:tmdb/widgets/theme.dart';
 
 import '../../config/responsive_config.dart';
+import '../auth/login/login.dart';
 import '../detail/detail.dart';
 
 class Home extends StatefulWidget {
@@ -52,7 +55,6 @@ class _HomeState extends State<Home> {
       _npResult = await _db.read(MovieFields.nowPlaying);
       _tpResult = await _db.read(MovieFields.topRated);
       _popularResult = await _db.read(MovieFields.popular);
-
     } else {
       print("connectivity ready");
 
@@ -115,10 +117,18 @@ class _HomeState extends State<Home> {
                                   ),
                                 ],
                               ),
-                              CircleAvatar(
-                                radius: 22,
-                                backgroundImage:
-                                    AssetImage("assets/images/daniel.jpg"),
+                              GestureDetector(
+                                onTap: () async {
+                                  await FirebaseAuth.instance.signOut();
+                                  if (!mounted) return;
+                                  Navigate.navigatorPushAndRemove(
+                                      context, Login());
+                                },
+                                child: CircleAvatar(
+                                  radius: 22,
+                                  backgroundImage:
+                                      AssetImage("assets/images/daniel.jpg"),
+                                ),
                               ),
                             ],
                           ),

@@ -48,4 +48,29 @@ class FirebaseService {
       return false;
     }
   }
+
+  Future<bool> signIn(
+    BuildContext context, {
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'user-not-found':
+          showSnackBar(context, title: 'Pengguna tidak ditemukan');
+          break;
+        case 'wrong-password':
+          showSnackBar(context, title: 'Kata sandi salah');
+          break;
+      }
+      return false;
+    } on SocketException {
+      showSnackBar(context, title: 'Tidak ada koneksi internet');
+      return false;
+    }
+  }
 }
