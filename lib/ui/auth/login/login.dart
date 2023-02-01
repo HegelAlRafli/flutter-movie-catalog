@@ -5,6 +5,7 @@ import 'package:tmdb/common/color_value.dart';
 import 'package:tmdb/services/firebase_service.dart';
 import 'package:tmdb/services/providers/loading_provider.dart';
 import 'package:tmdb/ui/auth/register/register.dart';
+import 'package:tmdb/ui/auth/reset_password/reset_password.dart';
 import 'package:tmdb/ui/home/home.dart';
 import 'package:tmdb/widgets/loading/loading_animation.dart';
 import 'package:tmdb/widgets/text_form_field/custom_text_form_field.dart';
@@ -104,7 +105,9 @@ class _LoginState extends State<Login> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigate.navigatorPush(context, ResetPassword());
+                          },
                           child: Text(
                             'Lupa password?',
                             style: TextStyle(color: Colors.white, fontSize: 12),

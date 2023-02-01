@@ -73,4 +73,33 @@ class FirebaseService {
       return false;
     }
   }
+
+  Future resetPassword(BuildContext context, {required String email}) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email).then(
+            (value) => showSnackBar(
+              context,
+              title: 'Email telah dikirim',
+              duration: const Duration(seconds: 3),
+            ),
+          );
+      return true;
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'user-not-found':
+          showSnackBar(context, title: 'Email tidak ditemukan');
+          break;
+        case 'invalid-email':
+          showSnackBar(context, title: 'Invalid Email');
+          break;
+        case 'missing-email':
+          showSnackBar(context, title: 'Email tidak ditemukan');
+          break;
+      }
+      return false;
+    } on SocketException {
+      showSnackBar(context, title: 'Tidak ada koneksi internet');
+      return false;
+    }
+  }
 }
