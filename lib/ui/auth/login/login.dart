@@ -46,15 +46,12 @@ class _LoginState extends State<Login> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () async {
-                            SchedulerBinding.instance
-                                .addPersistentFrameCallback((_) async {
-                              await SharedCode().setToken('skip', true).then(
-                                    (value) => value
-                                        ? Navigate.navigatorPushAndRemove(
-                                            context, BottomNavigation())
-                                        : null,
-                                  );
-                            });
+                            await SharedCode().setToken('skip', true).then(
+                                  (value) => value
+                                      ? Navigate.navigatorPushAndRemove(
+                                          context, BottomNavigation())
+                                      : null,
+                                );
                           },
                           child: Text(
                             'Skip',
