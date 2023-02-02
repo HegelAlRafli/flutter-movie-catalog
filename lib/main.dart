@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:tmdb/common/color_value.dart';
 import 'package:tmdb/services/data.dart';
+import 'package:tmdb/services/providers/bottom_navigation_provider.dart';
+import 'package:tmdb/services/providers/loading_provider.dart';
 import 'package:tmdb/ui/home/home.dart';
+import 'package:tmdb/ui/splash_screen/splash_screen.dart';
 import 'package:tmdb/widgets/theme.dart';
 
 import 'config/push_notification_config.dart';
@@ -84,12 +88,26 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (context) => DataMoreUpComing(),
         )
+        ChangeNotifierProvider(create: (_) => LoadingProvider()),
+        ChangeNotifierProvider(create: (_) => BottomNavigationProvider()),
       ],
       child: MaterialApp(
         theme: ThemeData(
             appBarTheme: AppBarTheme(backgroundColor: appBarColor),
             scaffoldBackgroundColor: backgroundColor,
-            textTheme: GoogleFonts.openSansTextTheme()),
+            textTheme: GoogleFonts.openSansTextTheme(),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                  primary: ColorValue.primaryColor,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  )),
+            )),
         builder: (context, child) {
           return ScrollConfiguration(
             behavior: MyBehavior(),
@@ -97,7 +115,7 @@ class _MyAppState extends State<MyApp> {
           );
         },
         debugShowCheckedModeBanner: false,
-        home: Home(),
+        home: SplashScreen(),
       ),
     );
   }
