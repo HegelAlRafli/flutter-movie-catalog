@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tmdb/common/navigate.dart';
+import 'package:tmdb/common/shared_code.dart';
 import 'package:tmdb/ui/auth/login/login.dart';
 import 'package:tmdb/ui/auth/register/register.dart';
 import 'package:tmdb/ui/home/home.dart';
@@ -16,14 +17,24 @@ class _SplashScreenState extends State<SplashScreen> {
   final ValueNotifier<double> _opacityLogo = ValueNotifier<double>(0);
 
   Future _initialize() async {
+    bool token = await _checkSkip();
     await Future.delayed(const Duration(seconds: 1));
     _opacityLogo.value = 1;
     await Future.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;
     Navigate.navigatorPushAndRemove(
       context,
-      FirebaseAuth.instance.currentUser != null ? Home() : Login(),
+      FirebaseAuth.instance.currentUser != null
+          ? Home()
+          : token
+              ? Home()
+              : Login(),
     );
+  }
+
+  Future<bool> _checkSkip() async {
+    bool token = await SharedCode().getToken('skip');
+    return token;
   }
 
   @override
