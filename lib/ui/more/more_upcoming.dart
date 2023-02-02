@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tmdb/models/movie_model.dart';
-import '../../services/api_service.dart';
+import 'package:provider/provider.dart';
+import 'package:tmdb/services/data.dart';
 import '../../widgets/item_more.dart';
 
 class MoreUpComing extends StatefulWidget {
@@ -11,29 +11,11 @@ class MoreUpComing extends StatefulWidget {
 }
 
 class _MoreUpComingState extends State<MoreUpComing> {
-  MovieModel? _model;
-  bool _isLoaded = false;
-  bool _hasMore = true;
-  int _currentPage = 1;
-  List<Results> _results = [];
-
   final _controller = ScrollController();
 
   Future<void> _getUpComing() async {
-    _model = await ApiService().getNowPlaying(_currentPage);
-
-    setState(() {
-
-      if (_currentPage > 499) {
-        _hasMore = false;
-      } else {
-        _results.addAll(_model!.results!);
-        _currentPage++;
-      }
-
-      print("current page : " + _currentPage.toString());
-      _isLoaded = true;
-    });
+    final pro = Provider.of<DataMoreUpComing>(context, listen: false);
+    pro.getUpComing();
   }
 
   void controller() {
@@ -61,6 +43,7 @@ class _MoreUpComingState extends State<MoreUpComing> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<DataMoreUpComing>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -72,37 +55,37 @@ class _MoreUpComingState extends State<MoreUpComing> {
         ),
         elevation: 0,
       ),
-      body: _isLoaded
+      body: provider.isLoaded
           ? ListView.builder(
-        padding: EdgeInsets.only(bottom: 20),
-        controller: _controller,
-        itemCount: _results.length + 1,
-        itemBuilder: (context, index) {
-          if (index < _results.length) {
-            return ItemMore(
-              id: _results[index].id!,
-              poster: _results[index].posterPath!,
-              title: _results[index].title!,
-              vote: _results[index].voteAverage!,
-              language: _results[index].originalLanguage!,
-              release: _results[index].releaseDate!,
-            );
-          } else {
-            return Visibility(
-              visible: _hasMore,
-              child: Center(
-                child: Container(
-                  margin: EdgeInsets.only(top: 10),
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            );
-          }
-        },
-      )
+              padding: EdgeInsets.only(bottom: 20),
+              controller: _controller,
+              itemCount: provider.results.length + 1,
+              itemBuilder: (context, index) {
+                if (index < provider.results.length) {
+                  return ItemMore(
+                    id: provider.results[index].id!,
+                    poster: provider.results[index].posterPath!,
+                    title: provider.results[index].title!,
+                    vote: provider.results[index].voteAverage!,
+                    language: provider.results[index].originalLanguage!,
+                    release: provider.results[index].releaseDate!,
+                  );
+                } else {
+                  return Visibility(
+                    visible: provider.hasMore,
+                    child: Center(
+                      child: Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  );
+                }
+              },
+            )
           : Center(
-        child: CircularProgressIndicator(),
-      ),
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 }

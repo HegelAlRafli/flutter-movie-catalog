@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tmdb/models/movie_model.dart';
+import 'package:provider/provider.dart';
+import 'package:tmdb/services/data.dart';
 import 'package:tmdb/widgets/item_more.dart';
-import '../../services/api_service.dart';
 
 class MoreTrending extends StatefulWidget {
   const MoreTrending({Key? key}) : super(key: key);
@@ -11,28 +11,11 @@ class MoreTrending extends StatefulWidget {
 }
 
 class _MoreTrendingState extends State<MoreTrending> {
-  MovieModel? _model;
-  bool _isLoaded = false;
-  bool _hasMore = true;
-  int _currentPage = 1;
-  List<Results> _results = [];
-
   final _controller = ScrollController();
 
   Future<void> _getTrending() async {
-    _model = await ApiService().getPopular(_currentPage);
-
-    setState(() {
-      if (_currentPage > 499) {
-        _hasMore = false;
-      } else {
-        _results.addAll(_model!.results!);
-        _currentPage++;
-      }
-
-      print("current page : " + _currentPage.toString());
-      _isLoaded = true;
-    });
+    final pro = Provider.of<DataMoreTrending>(context, listen: false);
+    pro.getMoreTrending(context);
   }
 
   void controller() {
@@ -60,6 +43,8 @@ class _MoreTrendingState extends State<MoreTrending> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<DataMoreTrending>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -71,24 +56,24 @@ class _MoreTrendingState extends State<MoreTrending> {
         ),
         elevation: 0,
       ),
-      body: _isLoaded
+      body: provider.isLoaded
           ? ListView.builder(
               padding: EdgeInsets.only(bottom: 20),
               controller: _controller,
-              itemCount: _results.length + 1,
+              itemCount: provider.results.length + 1,
               itemBuilder: (context, index) {
-                if (index < _results.length) {
+                if (index < provider.results.length) {
                   return ItemMore(
-                    id: _results[index].id!,
-                    poster: _results[index].posterPath!,
-                    title: _results[index].title!,
-                    vote: _results[index].voteAverage!,
-                    language: _results[index].originalLanguage!,
-                    release: _results[index].releaseDate!,
+                    id: provider.results[index].id!,
+                    poster: provider.results[index].posterPath!,
+                    title: provider.results[index].title!,
+                    vote: provider.results[index].voteAverage!,
+                    language: provider.results[index].originalLanguage!,
+                    release: provider.results[index].releaseDate!,
                   );
                 } else {
                   return Visibility(
-                    visible: _hasMore,
+                    visible: provider.hasMore,
                     child: Center(
                       child: Container(
                         margin: EdgeInsets.only(top: 10),

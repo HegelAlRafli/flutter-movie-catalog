@@ -76,7 +76,18 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => Data()),
+        ChangeNotifierProvider(
+          create: (context) => DataHome(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DataDetail(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DataMoreTrending(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DataMoreUpComing(),
+        )
         ChangeNotifierProvider(create: (_) => LoadingProvider()),
         ChangeNotifierProvider(create: (_) => BottomNavigationProvider()),
       ],

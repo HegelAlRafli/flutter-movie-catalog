@@ -2,10 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:tmdb/config/responsive_config.dart';
-import 'package:tmdb/models/detail_model.dart';
-import 'package:tmdb/models/recommendation_model.dart';
-import 'package:tmdb/services/api_service.dart';
+import 'package:tmdb/services/data.dart';
 import 'package:tmdb/widgets/item_cast.dart';
 import 'package:tmdb/widgets/item_recom.dart';
 import 'package:tmdb/widgets/item_video.dart';
@@ -22,17 +21,9 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
-  DetailMovieModel? _detailModel;
-  RecommendationModel? _recomModel;
-  bool _isLoaded = false;
-  bool _showFab = false;
-
-  Future<void> _getDetail() async {
-    _detailModel = await ApiService().getDetail(widget.id);
-    _recomModel = await ApiService().getRecommendation(widget.id);
-    setState(() {
-      _isLoaded = true;
-    });
+  Future<void> getDetail() async {
+    final pro = Provider.of<DataDetail>(context, listen: false);
+    pro.getDetail(widget.id);
   }
 
   Future _openUrl(String url) async {
@@ -70,22 +61,25 @@ class _DetailState extends State<Detail> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getDetail();
+    getDetail();
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<DataDetail>(context);
+
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: _isLoaded
+      body: provider.isLoaded
           ? SingleChildScrollView(
               child: Stack(
                 children: [
                   GestureDetector(
                     onTap: () {
                       String url =
-                          "https://www.youtube.com/watch?v=${_detailModel!.videos!.results![0].key}";
+                          "https://www.youtube.com/watch?v=${provider.detailModel!.videos!.results![0].key}";
+                      // "https://www.youtube.com/watch?v=${_detailModel!.videos!.results![0].key}";
 
                       _openUrl(url);
                     },
@@ -100,7 +94,7 @@ class _DetailState extends State<Detail> {
                           CachedNetworkImage(
                             width: double.infinity,
                             imageUrl:
-                                "https://image.tmdb.org/t/p/w500${_detailModel!.backdropPath}",
+                                "https://image.tmdb.org/t/p/w500${provider.detailModel!.backdropPath}",
                             fit: BoxFit.cover,
                           ),
                           Container(
@@ -150,7 +144,7 @@ class _DetailState extends State<Detail> {
                                 ),
                                 child: CachedNetworkImage(
                                   imageUrl:
-                                      "https://image.tmdb.org/t/p/w500${_detailModel!.posterPath}",
+                                      "https://image.tmdb.org/t/p/w500${provider.detailModel!.posterPath}",
                                   fit: BoxFit.fill,
                                   placeholder: (context, url) {
                                     return Container(
@@ -179,7 +173,7 @@ class _DetailState extends State<Detail> {
                                   Container(
                                     width: size.width * 0.5,
                                     child: Text(
-                                      _detailModel!.title!,
+                                      provider.detailModel!.title!,
                                       maxLines: 2,
                                       style: TextStyle(
                                         color: Colors.white,
@@ -197,19 +191,22 @@ class _DetailState extends State<Detail> {
                                       defaultVerticalAlignment:
                                           TableCellVerticalAlignment.middle,
                                       children: [
-                                        _tableRow("Genre",
-                                            _detailModel!.genres![0].name!),
+                                        _tableRow(
+                                            "Genre",
+                                            provider
+                                                .detailModel!.genres![0].name!),
                                         _tableRow(
                                           "Durasi",
                                           _formatDuration(
                                             Duration(
-                                              minutes: _detailModel!.runtime!,
+                                              minutes: provider
+                                                  .detailModel!.runtime!,
                                             ),
                                           ),
                                         ),
                                         _tableRow("Sutradara", "Taika Watiti"),
                                         _tableRow("Tanggal Rilis",
-                                            _detailModel!.releaseDate!),
+                                            provider.detailModel!.releaseDate!),
                                       ],
                                     ),
                                   ),
@@ -229,8 +226,10 @@ class _DetailState extends State<Detail> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _infoRating(size, _detailModel!.voteAverage!),
-                              _infoText(size, "Status", _detailModel!.status!),
+                              _infoRating(
+                                  size, provider.detailModel!.voteAverage!),
+                              _infoText(size, "Status",
+                                  provider.detailModel!.status!),
                               _infoText(size, "P-G", "16+"),
                             ],
                           ),
@@ -257,7 +256,7 @@ class _DetailState extends State<Detail> {
                                 height: size.height * 0.02,
                               ),
                               Text(
-                                _detailModel!.overview!,
+                                provider.detailModel!.overview!,
                                 style: TextStyle(
                                   color: Colors.white.withOpacity(0.8),
                                 ),
@@ -291,9 +290,11 @@ class _DetailState extends State<Detail> {
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             padding: EdgeInsets.only(left: 20, right: 5),
-                            itemCount: _detailModel?.credits?.cast?.length,
+                            itemCount:
+                                provider.detailModel?.credits?.cast?.length,
                             itemBuilder: (context, index) {
-                              final model = _detailModel!.credits!.cast![index];
+                              final model =
+                                  provider.detailModel!.credits!.cast![index];
 
                               return ItemCast(
                                 imageUrl: model.profilePath ?? "null",
@@ -329,10 +330,11 @@ class _DetailState extends State<Detail> {
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             padding: EdgeInsets.only(left: 20, right: 5),
-                            itemCount: _detailModel?.videos?.results?.length,
+                            itemCount:
+                                provider.detailModel?.videos?.results?.length,
                             itemBuilder: (context, index) {
                               final model =
-                                  _detailModel!.videos!.results![index];
+                                  provider.detailModel!.videos!.results![index];
 
                               return ItemVideo(
                                 ytKey: model.key!,
@@ -366,9 +368,10 @@ class _DetailState extends State<Detail> {
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             padding: EdgeInsets.only(left: 20, right: 5),
-                            itemCount: _recomModel?.results?.length,
+                            itemCount: provider.recomModel?.results?.length,
                             itemBuilder: (context, index) {
-                              final model = _recomModel!.results![index];
+                              final model =
+                                  provider.recomModel!.results![index];
 
                               return ItemRecommendation(
                                 id: model.id!,
