@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tmdb/services/providers/bottom_navigation_provider.dart';
 import 'package:tmdb/ui/home/home.dart';
 import 'package:tmdb/ui/profile/profile.dart';
 
@@ -46,19 +45,16 @@ class _BottomNavigationState extends State<BottomNavigation> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    final provider = Provider.of<BottomNavigationProvider>(context, listen: false);
-    provider.currentIndex = widget.currentIndex;
+    _currentIndex = widget.currentIndex;
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<BottomNavigationProvider>(context);
-
     return Scaffold(
-      body: _tabs[provider.currentIndex],
+      body: _tabs[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: _items,
-        currentIndex: provider.currentIndex,
+        currentIndex: _currentIndex,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.white,
@@ -77,7 +73,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
         showSelectedLabels: true,
         elevation: 5,
         onTap: (index) {
-          provider.currentIndex = index;
+          _currentIndex = index;
         },
       ),
     );
