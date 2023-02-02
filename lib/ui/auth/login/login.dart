@@ -6,6 +6,7 @@ import 'package:tmdb/services/firebase_service.dart';
 import 'package:tmdb/services/providers/loading_provider.dart';
 import 'package:tmdb/ui/auth/register/register.dart';
 import 'package:tmdb/ui/auth/reset_password/reset_password.dart';
+import 'package:tmdb/ui/bottom_navigation/bottom_navigation.dart';
 import 'package:tmdb/ui/home/home.dart';
 import 'package:tmdb/widgets/loading/loading_animation.dart';
 import 'package:tmdb/widgets/text_form_field/custom_text_form_field.dart';
@@ -47,7 +48,7 @@ class _LoginState extends State<Login> {
                             await SharedCode().setToken('skip', true).then(
                                   (value) => value
                                       ? Navigate.navigatorPushAndRemove(
-                                          context, Home())
+                                          context, BottomNavigation())
                                       : null,
                                 );
                           },
