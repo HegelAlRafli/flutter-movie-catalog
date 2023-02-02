@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:tmdb/common/color_value.dart';
 import 'package:tmdb/services/firebase_service.dart';
@@ -45,12 +46,15 @@ class _LoginState extends State<Login> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () async {
-                            await SharedCode().setToken('skip', true).then(
-                                  (value) => value
-                                      ? Navigate.navigatorPushAndRemove(
-                                          context, BottomNavigation())
-                                      : null,
-                                );
+                            SchedulerBinding.instance
+                                .addPersistentFrameCallback((_) async {
+                              await SharedCode().setToken('skip', true).then(
+                                    (value) => value
+                                        ? Navigate.navigatorPushAndRemove(
+                                            context, BottomNavigation())
+                                        : null,
+                                  );
+                            });
                           },
                           child: Text(
                             'Skip',
