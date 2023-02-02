@@ -70,8 +70,21 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => Data(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => DataHome(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DataDetail(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DataMoreTrending(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DataMoreUpComing(),
+        )
+      ],
       child: MaterialApp(
         theme: ThemeData(
             appBarTheme: AppBarTheme(backgroundColor: appBarColor),

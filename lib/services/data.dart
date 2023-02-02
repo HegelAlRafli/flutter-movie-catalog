@@ -1,13 +1,16 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:tmdb/database/init/database.dart';
 import 'package:tmdb/database/model/database_model.dart';
+import 'package:tmdb/models/detail_model.dart';
 import 'package:tmdb/models/movie_model.dart';
+import 'package:tmdb/models/recommendation_model.dart';
 
 import 'package:tmdb/services/api_service.dart';
-import 'package:tmdb/ui/home/home.dart';
-import 'package:tmdb/services/api_service.dart';
+import 'package:tmdb/models/movie_model.dart' as result;
 
-class Data extends ChangeNotifier {
+class DataHome extends ChangeNotifier {
   MovieModel? _npModel;
   MovieModel? _tpModel;
   MovieModel? _popularModel;
@@ -17,11 +20,26 @@ class Data extends ChangeNotifier {
   List tpResult = [];
   List popularResult = [];
 
+  DatabaseHelper _db = DatabaseHelper.instance;
+
   Future fetchApi(context) async {
-    await getPopular();
-    await getNowPlaying();
-    await getTopRated();
-    isLoaded = true;
+    var connectivity = await (Connectivity().checkConnectivity());
+
+    if (connectivity == ConnectivityResult.none) {
+      print("connectivity none");
+
+      npResult = await _db.read(MovieFields.nowPlaying);
+      tpResult = await _db.read(MovieFields.topRated);
+      popularResult = await _db.read(MovieFields.popular);
+      isLoaded = true;
+    } else {
+      print("connectivity ready");
+
+      await getPopular();
+      await getNowPlaying();
+      await getTopRated();
+      isLoaded = true;
+    }
     notifyListeners();
   }
 
@@ -64,5 +82,64 @@ class Data extends ChangeNotifier {
     DatabaseHelper _db = DatabaseHelper.instance;
 
     return _db.read(table);
+  }
+}
+
+class DataDetail extends ChangeNotifier {
+  DetailMovieModel? detailModel;
+  RecommendationModel? recomModel;
+  bool isLoaded = false;
+
+  Future getDetail(int id) async {
+    detailModel = await ApiService().getDetail(id);
+    recomModel = await ApiService().getRecommendation(id);
+    isLoaded = true;
+    notifyListeners();
+  }
+}
+
+class DataMoreTrending extends ChangeNotifier {
+  MovieModel? model;
+  bool isLoaded = false;
+  bool hasMore = true;
+  int currentPage = 1;
+  List<result.Results> results = [];
+
+  Future<void> getMoreTrending(BuildContext context) async {
+    model = await ApiService().getPopular(currentPage);
+
+    if (currentPage > 499) {
+      hasMore = false;
+    } else {
+      results.addAll(model!.results!);
+      currentPage++;
+    }
+
+    print("current page : " + currentPage.toString());
+    isLoaded = true;
+    notifyListeners();
+  }
+}
+
+class DataMoreUpComing extends ChangeNotifier {
+  MovieModel? model;
+  bool isLoaded = false;
+  bool hasMore = true;
+  int currentPage = 1;
+  List<result.Results> results = [];
+
+  Future<void> getUpComing() async {
+    model = await ApiService().getNowPlaying(currentPage);
+
+    if (currentPage > 499) {
+      hasMore = false;
+    } else {
+      results.addAll(model!.results!);
+      currentPage++;
+    }
+
+    print("current page : " + currentPage.toString());
+    isLoaded = true;
+    notifyListeners();
   }
 }
