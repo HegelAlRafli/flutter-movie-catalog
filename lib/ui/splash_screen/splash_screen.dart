@@ -4,6 +4,8 @@ import 'package:tmdb/common/navigate.dart';
 import 'package:tmdb/common/shared_code.dart';
 import 'package:tmdb/ui/auth/login/login.dart';
 import 'package:tmdb/ui/auth/register/register.dart';
+import 'package:tmdb/ui/bottom_navigation/bottom_navigation.dart';
+import 'package:tmdb/ui/bottom_navigation/bottom_navigation.dart';
 import 'package:tmdb/ui/home/home.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -25,9 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigate.navigatorPushAndRemove(
       context,
       FirebaseAuth.instance.currentUser != null
-          ? Home()
+          ? BottomNavigation()
           : token
-              ? Home()
+              ? BottomNavigation()
               : Login(),
     );
   }

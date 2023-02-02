@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:tmdb/common/color_value.dart';
 import 'package:tmdb/services/firebase_service.dart';
 import 'package:tmdb/services/providers/loading_provider.dart';
+import 'package:tmdb/ui/bottom_navigation/bottom_navigation.dart';
 import 'package:tmdb/ui/home/home.dart';
 import 'package:tmdb/widgets/text_form_field/custom_text_form_field.dart';
 
@@ -48,7 +49,7 @@ class _RegisterState extends State<Register> {
                             await SharedCode().setToken('skip', true).then(
                                   (value) => value
                                       ? Navigate.navigatorPushAndRemove(
-                                          context, Home())
+                                          context, BottomNavigation())
                                       : null,
                                 );
                           },
