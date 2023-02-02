@@ -117,18 +117,10 @@ class _HomeState extends State<Home> {
                                   ),
                                 ],
                               ),
-                              GestureDetector(
-                                onTap: () async {
-                                  await FirebaseAuth.instance.signOut();
-                                  if (!mounted) return;
-                                  Navigate.navigatorPushAndRemove(
-                                      context, Login());
-                                },
-                                child: CircleAvatar(
-                                  radius: 22,
-                                  backgroundImage:
-                                      AssetImage("assets/images/daniel.jpg"),
-                                ),
+                              CircleAvatar(
+                                radius: 22,
+                                backgroundImage:
+                                    AssetImage("assets/images/daniel.jpg"),
                               ),
                             ],
                           ),
