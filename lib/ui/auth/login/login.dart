@@ -129,6 +129,7 @@ class _LoginState extends State<Login> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             provider.setIsLoad();
+                            await SharedCode().setToken('skip', false);
                             await FirebaseService()
                                 .signIn(
                                   context,

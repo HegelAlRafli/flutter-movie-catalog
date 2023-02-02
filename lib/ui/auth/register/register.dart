@@ -139,6 +139,7 @@ class _RegisterState extends State<Register> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             provider.setIsLoad();
+                            await SharedCode().setToken('skip', false);
                             await FirebaseService()
                                 .signUp(
                                   context,

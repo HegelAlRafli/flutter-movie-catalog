@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tmdb/services/providers/bottom_navigation_provider.dart';
 import 'package:tmdb/ui/home/home.dart';
+import 'package:tmdb/ui/profile/profile.dart';
 
 import '../../common/color_value.dart';
 
 class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({Key? key}) : super(key: key);
+  final int currentIndex;
+
+  const BottomNavigation({Key? key, this.currentIndex = 0}) : super(key: key);
 
   @override
   State<BottomNavigation> createState() => _BottomNavigationState();
@@ -18,7 +21,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   final _tabs = [
     Home(),
     Home(),
-    Home(),
+    Profile(),
   ];
 
   final _items = [
@@ -38,6 +41,14 @@ class _BottomNavigationState extends State<BottomNavigation> {
       label: 'Profil',
     ),
   ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    final provider = Provider.of<BottomNavigationProvider>(context, listen: false);
+    provider.currentIndex = widget.currentIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
