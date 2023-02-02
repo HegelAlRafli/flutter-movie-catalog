@@ -23,6 +23,7 @@ class DataHome extends ChangeNotifier {
   DatabaseHelper _db = DatabaseHelper.instance;
 
   Future fetchApi(context) async {
+    isLoaded = false;
     var connectivity = await (Connectivity().checkConnectivity());
 
     if (connectivity == ConnectivityResult.none) {
@@ -91,6 +92,7 @@ class DataDetail extends ChangeNotifier {
   bool isLoaded = false;
 
   Future getDetail(int id) async {
+    isLoaded = false;
     detailModel = await ApiService().getDetail(id);
     recomModel = await ApiService().getRecommendation(id);
     isLoaded = true;
@@ -106,6 +108,7 @@ class DataMoreTrending extends ChangeNotifier {
   List<result.Results> results = [];
 
   Future<void> getMoreTrending(BuildContext context) async {
+    isLoaded = false;
     model = await ApiService().getPopular(currentPage);
 
     if (currentPage > 499) {
@@ -129,6 +132,7 @@ class DataMoreUpComing extends ChangeNotifier {
   List<result.Results> results = [];
 
   Future<void> getUpComing() async {
+    isLoaded = false;
     model = await ApiService().getNowPlaying(currentPage);
 
     if (currentPage > 499) {

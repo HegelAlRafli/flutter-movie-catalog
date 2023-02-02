@@ -73,7 +73,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
         showSelectedLabels: true,
         elevation: 5,
         onTap: (index) {
-          _currentIndex = index;
+          setState(() {
+            _currentIndex = index;
+          });
         },
       ),
     );
