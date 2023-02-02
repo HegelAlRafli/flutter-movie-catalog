@@ -44,7 +44,14 @@ class _RegisterState extends State<Register> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            await SharedCode().setToken('skip', true).then(
+                                  (value) => value
+                                      ? Navigate.navigatorPushAndRemove(
+                                          context, Home())
+                                      : null,
+                                );
+                          },
                           child: Text(
                             'Skip',
                             style: TextStyle(color: Colors.white),
