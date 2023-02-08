@@ -1,15 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tmdb/config/responsive_config.dart';
+import 'package:tmdb/models/detail_model.dart';
 import 'package:tmdb/services/data.dart';
+import 'package:tmdb/services/firebase_service.dart';
 import 'package:tmdb/widgets/item_cast.dart';
 import 'package:tmdb/widgets/item_recom.dart';
 import 'package:tmdb/widgets/item_video.dart';
+import 'package:tmdb/widgets/snackbar/snackbar_item.dart';
 import 'package:tmdb/widgets/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../common/shared_code.dart';
 
 class Detail extends StatefulWidget {
   final int id;
@@ -21,9 +28,12 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
+  bool _currentUser = false;
+
   Future<void> getDetail() async {
     final pro = Provider.of<DataDetail>(context, listen: false);
     pro.getDetail(widget.id);
+    _currentUser = await SharedCode().currentUser;
   }
 
   Future _openUrl(String url) async {
@@ -67,10 +77,24 @@ class _DetailState extends State<Detail> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<DataDetail>(context);
-
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      floatingActionButton: provider.isLoaded
+          ? _currentUser
+              ? _floatingButton(provider.detailModel!)
+              : FloatingActionButton(
+                  onPressed: () {
+                    showSnackBar(context,
+                        title: 'Silahkan masuk terlebih dahulu');
+                  },
+                  backgroundColor: Colors.pink,
+                  child: Icon(
+                    Icons.favorite,
+                    color: Colors.white,
+                  ),
+                )
+          : null,
       body: provider.isLoaded
           ? SingleChildScrollView(
               child: Stack(
@@ -79,8 +103,6 @@ class _DetailState extends State<Detail> {
                     onTap: () {
                       String url =
                           "https://www.youtube.com/watch?v=${provider.detailModel!.videos!.results![0].key}";
-                      // "https://www.youtube.com/watch?v=${_detailModel!.videos!.results![0].key}";
-
                       _openUrl(url);
                     },
                     child: Container(
@@ -391,14 +413,6 @@ class _DetailState extends State<Detail> {
           : Center(
               child: CircularProgressIndicator(),
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colors.pink,
-        child: Icon(
-          Icons.favorite,
-          color: Colors.white,
-        ),
-      ),
     );
   }
 
@@ -495,6 +509,68 @@ class _DetailState extends State<Detail> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _floatingButton(DetailMovieModel model) {
+    final _getDocument = FirebaseFirestore.instance
+        .collection('users')
+        .doc(SharedCode().uid)
+        .collection('favourite')
+        .doc('${widget.id}');
+
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: _getDocument.snapshots(),
+      builder: (_, snapshot) {
+        if (snapshot.hasData) {
+          if (!snapshot.data!.exists) {
+            return FloatingActionButton(
+              onPressed: () async {
+                await FirebaseService()
+                    .addFavourite(
+                      context,
+                      id: widget.id,
+                      image: model.posterPath!,
+                      title: model.title!,
+                      rating: model.voteAverage!,
+                      language: model.originalLanguage!,
+                      release: model.releaseDate!,
+                    )
+                    .then(
+                      (value) => value
+                          ? showSnackBar(context,
+                              title: 'Berhasil menambahkan film')
+                          : showSnackBar(context,
+                              title: 'Gagal menambahkan film'),
+                    );
+              },
+              backgroundColor: Colors.pink,
+              child: Icon(
+                Icons.favorite,
+                color: Colors.white,
+              ),
+            );
+          }
+          return FloatingActionButton(
+            onPressed: () async {
+              await FirebaseService()
+                  .deleteFavourite(context, id: widget.id)
+                  .then(
+                    (value) => value
+                        ? showSnackBar(context, title: 'Film telah dihapus')
+                        : showSnackBar(context, title: 'Gagal menghapus film'),
+                  );
+            },
+            backgroundColor: Colors.pink,
+            child: Icon(
+              Icons.done,
+              color: Colors.white,
+            ),
+          );
+        } else {
+          return SizedBox();
+        }
+      },
     );
   }
 }

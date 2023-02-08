@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedCode {
@@ -27,4 +28,8 @@ class SharedCode {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(token) ?? false;
   }
+
+  bool get currentUser => FirebaseAuth.instance.currentUser != null;
+
+  String get uid => FirebaseAuth.instance.currentUser!.uid;
 }
