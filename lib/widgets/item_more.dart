@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tmdb/config/responsive_config.dart';
+import 'package:tmdb/services/firebase_service.dart';
+import 'package:tmdb/widgets/snackbar/snackbar_item.dart';
 import '../ui/detail/detail.dart';
 
 class ItemMore extends StatelessWidget {
@@ -12,6 +14,7 @@ class ItemMore extends StatelessWidget {
   final num vote;
   final String language;
   final String release;
+  final bool isFavourite;
 
   const ItemMore(
       {Key? key,
@@ -20,7 +23,8 @@ class ItemMore extends StatelessWidget {
       required this.title,
       required this.vote,
       required this.language,
-      required this.release})
+      required this.release,
+      this.isFavourite = false})
       : super(key: key);
 
   @override
@@ -43,7 +47,9 @@ class ItemMore extends StatelessWidget {
           children: [
             Container(
               width: size.width,
-              height: isLandscape(context) ? size.height * 0.33 : size.height * 0.145,
+              height: isLandscape(context)
+                  ? size.height * 0.33
+                  : size.height * 0.145,
               margin: EdgeInsets.only(top: size.height * 0.05),
               decoration: BoxDecoration(
                 color: Color(0XFF434051),
@@ -51,21 +57,26 @@ class ItemMore extends StatelessWidget {
               ),
             ),
             Container(
-              height: isLandscape(context) ? size.height * 0.33 : size.height * 0.175,
-              margin: EdgeInsets.only(left: 10, top: 8),
+              height: isLandscape(context)
+                  ? size.height * 0.33
+                  : size.height * 0.175,
+              margin: EdgeInsets.only(left: 10, top: 8, right: 8),
               child: Row(
                 children: [
                   Container(
-                    width: isLandscape(context) ? size.width * 0.12 : size.width * 0.25,
-                    height: isLandscape(context) ? size.height * 0.33 : size.height * 0.175,
+                    width: isLandscape(context)
+                        ? size.width * 0.12
+                        : size.width * 0.25,
+                    height: isLandscape(context)
+                        ? size.height * 0.33
+                        : size.height * 0.175,
                     margin: EdgeInsets.only(right: 15),
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(7),
                     ),
                     child: CachedNetworkImage(
-                      imageUrl:
-                          "https://image.tmdb.org/t/p/w500${poster}",
+                      imageUrl: "https://image.tmdb.org/t/p/w500${poster}",
                       fit: BoxFit.fill,
                       placeholder: (context, url) {
                         return Container(
@@ -85,7 +96,7 @@ class ItemMore extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        width: size.width * 0.55,
+                        width: size.width * 0.46,
                         child: Text(
                           "${title}",
                           style: TextStyle(
@@ -136,6 +147,29 @@ class ItemMore extends StatelessWidget {
                       ),
                     ],
                   ),
+                  Spacer(),
+                  isFavourite
+                      ? Align(
+                          alignment: Alignment.bottomCenter,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.redAccent,
+                            ),
+                            onPressed: () async {
+                              await FirebaseService()
+                                  .deleteFavourite(context, id: id)
+                                  .then(
+                                    (value) => value
+                                        ? null
+                                        : showSnackBar(context,
+                                            title: 'Gagal menghapus film'),
+                                  );
+                            },
+                            splashRadius: 20,
+                          ),
+                        )
+                      : SizedBox(),
                 ],
               ),
             ),

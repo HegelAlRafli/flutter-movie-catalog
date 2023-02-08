@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tmdb/ui/favourite/favourite.dart';
 import 'package:tmdb/ui/home/home.dart';
 import 'package:tmdb/ui/profile/profile.dart';
 
@@ -19,7 +20,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   final _tabs = [
     Home(),
-    Home(),
+    Favourite(),
     Profile(),
   ];
 

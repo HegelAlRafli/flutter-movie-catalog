@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:tmdb/common/shared_code.dart';
 
 import '../widgets/snackbar/snackbar_item.dart';
 
@@ -99,6 +100,66 @@ class FirebaseService {
       return false;
     } on SocketException {
       showSnackBar(context, title: 'Tidak ada koneksi internet');
+      return false;
+    }
+  }
+
+  Future<bool> addFavourite(
+    BuildContext context, {
+    required num id,
+    required String image,
+    required String title,
+    required num rating,
+    required String language,
+    required String release,
+  }) async {
+    try {
+      DocumentReference documentReference = FirebaseFirestore.instance
+          .collection('users')
+          .doc(SharedCode().uid)
+          .collection('favourite')
+          .doc(id.toString());
+
+      FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(documentReference);
+
+        if (!snapshot.exists) {
+          await documentReference.set({
+            'id': id,
+            'image': image,
+            'title': title,
+            'rating': rating,
+            'language': language,
+            'release': release,
+            'created_at': DateTime.now(),
+          });
+        }
+      });
+      return true;
+    } on SocketException {
+      showSnackBar(context, title: 'Tidak ada koneksi internet');
+      return false;
+    } on FirebaseException {
+      return false;
+    }
+  }
+
+  Future<bool> deleteFavourite(BuildContext context, {required num id}) async {
+    try {
+      DocumentReference documentReference = FirebaseFirestore.instance
+          .collection('users')
+          .doc(SharedCode().uid)
+          .collection('favourite')
+          .doc(id.toString());
+
+      FirebaseFirestore.instance.runTransaction((transaction) async {
+        await documentReference.delete();
+      });
+      return true;
+    } on SocketException {
+      showSnackBar(context, title: 'Tidak ada koneksi internet');
+      return false;
+    } on FirebaseException {
       return false;
     }
   }
