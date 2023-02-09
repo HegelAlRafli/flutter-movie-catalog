@@ -27,9 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigate.navigatorPushAndRemove(
       context,
       FirebaseAuth.instance.currentUser != null
-          ? BottomNavigation()
+          ? Home()
           : token
-              ? BottomNavigation()
+              ? Home()
               : Login(),
     );
   }

@@ -49,7 +49,7 @@ class _LoginState extends State<Login> {
                             await SharedCode().setToken('skip', true).then(
                                   (value) => value
                                       ? Navigate.navigatorPushAndRemove(
-                                          context, BottomNavigation())
+                                          context, Home())
                                       : null,
                                 );
                           },

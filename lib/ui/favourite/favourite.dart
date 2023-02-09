@@ -36,6 +36,7 @@ class _FavouriteState extends State<Favourite> {
                 child: Center(
                   child: Text(
                     'Silahkan login terlebih dahulu untuk melihat favorit',
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
