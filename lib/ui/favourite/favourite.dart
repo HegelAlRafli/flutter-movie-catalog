@@ -25,6 +25,9 @@ class _FavouriteState extends State<Favourite> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Favorit'),
+      ),
       body: SafeArea(
         child: _currentUser
             ? SingleChildScrollView(
