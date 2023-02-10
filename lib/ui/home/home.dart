@@ -17,6 +17,7 @@ import 'package:tmdb/services/data.dart';
 import 'package:tmdb/ui/detail/detail.dart';
 import 'package:tmdb/ui/more/more_trending.dart';
 import 'package:tmdb/ui/more/more_upcoming.dart';
+import 'package:tmdb/ui/profile/profile.dart';
 import 'package:tmdb/ui/shimmer/home_shimmer.dart';
 import 'package:tmdb/widgets/item_movie.dart';
 import 'package:tmdb/widgets/theme.dart';
@@ -91,10 +92,19 @@ class _HomeState extends State<Home> {
                                 ),
                               ],
                             ),
-                            CircleAvatar(
-                              radius: 22,
-                              backgroundImage:
-                                  AssetImage("assets/images/daniel.jpg"),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Profile(),
+                                    ));
+                              },
+                              child: CircleAvatar(
+                                radius: 22,
+                                backgroundImage:
+                                    AssetImage("assets/images/daniel.jpg"),
+                              ),
                             ),
                           ],
                         ),
